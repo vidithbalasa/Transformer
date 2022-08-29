@@ -5,8 +5,8 @@ class Linear(Layer):
     '''
     A single dense layer.
     '''
-    def __init__(self, n_in, n_out):
-        super().__init__(n_in, n_out)
+    def __init__(self, n_in, n_out, **kwargs):
+        super().__init__(n_in, n_out, **kwargs)
         self.n_in = n_in
         self.n_out = n_out
     

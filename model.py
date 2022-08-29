@@ -1,47 +1,63 @@
 from micrograd.engine import Value
 from linear import Linear
-import numpy as np
+# import numpy as np
 import math
 from typing import List
 
 from tensor import flatten_2d
 
 class MultiHeadAttention:
-    def __init__(self, n_in, n_out, n_head=8):
-        self.n_in = n_in
-        self.n_out = n_out
+    def __init__(self, d_k = 64, n_head = 8):
+        '''
+        Params
+        ------
+        @d_k: dimensionality of the keys (i.e. embedding size)
+        @n_head: number of heads        
+        d_model: dimensionality of the model
+
+        Layers
+        ------
+        W_Q, W_K, W_V: Linear layers for the queries, keys, and values
+        W_O1, W_O2: Linear layers for the output
+        '''
+        self.d_k = d_k
         self.n_head = n_head
+        self.d_model = d_k * n_head
 
-        # for each head, create 3 linear layers for Q, K, & V
-        self.Q_l = [Linear(n_in, n_in) for _ in range(n_head)]
-        self.K_l = [Linear(n_in, n_in) for _ in range(n_head)]
-        self.V_l = [Linear(n_in, n_in) for _ in range(n_head)]
+        in_out = (self.d_model, self.d_model) 
+        self.W_Q = Linear(*in_out)
+        self.W_K = Linear(*in_out)
+        self.W_V = Linear(*in_out)
 
-        self.out_l = Linear(n_in * n_head, n_out) # output layer
+        self.W_O1 = Linear(*in_out)
+        self.W_O2 = Linear(*in_out, nonlin=False)
     
     def __call__(self, Q, K, V) -> List[Value]:
         '''
         Forward pass
-        1. Run each head (Q, K, V) through the corresponding linear layers
+        Assume Q, K, and V are all word embeddings of shape (batch_size, sequence_length, embedding_size)
+
+        1. Run each matrix (Q, K, V) through the corresponding linear layers
         2. Run each head through ScaledDotProductAttention
         3. Concatenate the heads and run through the output layer
         4. Run the output of all the heads through a linear layer
         '''
-        Q_out: List[Value] = [l(Q) for l in self.Q_l] # step 1
-        K_out = [l(K) for l in self.K_l]
-        V_out = [l(V) for l in self.V_l]
+        Q_out = self.W_Q(Q)
+        K_out = self.W_K(K)
+        V_out = self.W_V(V)
 
-        scaled_out = [self.ScaledDotProductAttention(Q_out[i], K_out[i], V_out[i]) for i in range(self.n_head)] # step 2
+        return
 
-        heads_out = flatten_2d(scaled_out) # step 3 // concatenating a list of lists is the same as flattening it
-        
-        return self.out_l(heads_out) # step 4
-    
     def ScaledDotProductAttention(self, Q, K, V, mask=None) -> list:
         '''
         Attention(Q,K,V) = softmax( (Q • K^T) / sqrt(d_k) ) • V
+            where Q,K,V are matrices of shape [batch_size, seq_len, d_k]
+            where d_k is the dimensionality of the keys (i.e. d_model)
+        A single scaled dot product head.
         '''
-        K_T = np.asarray(K).transpose()
+        # change Q from [B,s,d_k] to []
+        # K_T = np.asarray(K).transpose()
+        K_T = K
 
         x = [qi * xi for qi, xi in zip(Q, K_T)] # Q • K
         x = [i/math.sqrt(len(K)) for i in x] # x / sqrt(d_k)
