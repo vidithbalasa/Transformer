@@ -1,6 +1,5 @@
 '''
-Turns out all you really need for a tensor is a python list
-with a couple helper functions.
+All you need for a tensor is a list with a couple helper functions.
 '''
 
 def is_valid_tensor(l: list) -> bool:
