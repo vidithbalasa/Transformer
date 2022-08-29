@@ -7,22 +7,22 @@ from typing import List
 from tensor import flatten_2d
 
 class MultiHeadAttention:
-    def __init__(self, d_k = 64, n_head = 8):
+    def __init__(self, d_model = 512, n_head = 8):
         '''
         Params
         ------
-        @d_k: dimensionality of the keys (i.e. embedding size)
+        @d_model: embedding size
         @n_head: number of heads        
-        d_model: dimensionality of the model
+        d_k: embedding size after paritioning the output by n_head
 
         Layers
         ------
         W_Q, W_K, W_V: Linear layers for the queries, keys, and values
         W_O1, W_O2: Linear layers for the output
         '''
-        self.d_k = d_k
+        self.d_model = d_model
         self.n_head = n_head
-        self.d_model = d_k * n_head
+        self.d_k = d_model // n_head
 
         in_out = (self.d_model, self.d_model) 
         self.W_Q = Linear(*in_out)
@@ -42,9 +42,9 @@ class MultiHeadAttention:
         3. Concatenate the heads and run through the output layer
         4. Run the output of all the heads through a linear layer
         '''
-        Q_out = self.W_Q(Q)
-        K_out = self.W_K(K)
-        V_out = self.W_V(V)
+        Q = self.W_Q(Q)
+        K = self.W_K(K)
+        V = self.W_V(V)
 
         return
 
