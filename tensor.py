@@ -1,27 +1,28 @@
 '''
-All you need for a tensor is a list with a couple helper functions.
+Apparently, all you need for a tensor is a list with a couple helper functions.
 '''
 
-def is_valid_tensor(l: list) -> bool:
-    '''
-    Check if a list is a valid 2D tensor.
+# def is_valid_tensor(l: list) -> bool:
+#     '''
+#     Given an n-dimensional list, return True if it is a valid tensor.
 
-    1D tensor - Make sure every item is the same type.
-    2D tensor - Make sure every item is the same type and has the same length.
+#     A valid tensor is a n-dimentional list where the last dimention (n[-1]) is
+#     the same for all elements.
+
+#     This function recursively checks the dimensions of the list
+#     '''
+#     if not isinstance(l[0], list):
+#         return True
+#     dim = 0
+#     return    
+
+def shape(l: list) -> tuple:
     '''
-    # 1D tensor
+    Recursively returns the shape of an n-dimensional list.
+    '''
     if not isinstance(l[0], list):
-        if not all(isinstance(item, type(l[0])) for item in l):
-            return False
-        return True
-
-    # 2D tensor
-    else:
-        if not all(isinstance(item, list) for item in l):
-            return False
-        if not all(len(item) == len(l[0]) for item in l):
-            return False
-        return True
+        return (len(l),)
+    return (len(l),) + shape(l[0])
 
 def flatten_2d(l: list) -> list:
     '''
@@ -29,14 +30,26 @@ def flatten_2d(l: list) -> list:
     '''
     return [item for sublist in l for item in sublist]
 
-def transpose_2d(l: list) -> list:
+def view_by_head(l: list, d_k: int) -> list:
     '''
-    Transpose a 2D list.
-    '''
-    return [list(i) for i in zip(*l)]
+    Assume l is a matrix of shape (batch_size, sequence_length, d_model)
 
-def transpose_1d(l: list) -> list:
+    Split the matrix into n_head matrices of shape (batch_size, sequence_length, n_heads, d_k)
+
+    Return a transposed matrix of shape (batch_size, n_heads, sequence_length, d_k)
     '''
-    Transpose a 1D list.
+    matrix = []
+    for seq in l:
+        new_seq = []
+        for token in seq:
+            x = [token[x:x+d_k] for x in range(0, len(token), d_k)]
+            new_seq.append(x)
+        matrix.append(new_seq)
+        
+    return [list(token) for seq in matrix for token in zip(*seq)]
+
+def reshape_flattened_2d(l: list, shape: tuple) -> list:
     '''
-    return [[i] for i in l]
+    Reshape a flattened list into a 2-dimensional list.
+    '''
+    return [l[i:i+shape[1]] for i in range(0, len(l), shape[1])]
