@@ -1,5 +1,5 @@
 from micrograd.nn import Layer
-from tensor import flatten_2d, shape, reshape_flattened_2d
+from tensor import flatten_nd, shape, reshape_flattened_nd
 
 class Linear(Layer):
     '''
@@ -14,18 +14,18 @@ class Linear(Layer):
         '''
         Forward pass.
         '''
-        # save dimentions and flatten if 2D
+        # save dimentions and flatten if multi dimensional
         if isinstance(x[0], list):
             self.dims = shape(x)
-            x = flatten_2d(x)
+            x = flatten_nd(x)
         else:
             self.dims = None
 
         x = super().__call__(x)
 
-        # reshape if 2D
+        # reshape if multi dimensional
         if self.dims and self.n_in == self.n_out:
-            x = reshape_flattened_2d(x, self.dims)
+            x = reshape_flattened_nd(x, self.dims)
         
         return x
 
