@@ -29,20 +29,4 @@ def reshape_flattened_nd(l: list, og_shape: tuple) -> list:
     splits = len(matrix) // og_shape[0]
     return [reshape_flattened_nd(matrix[x:x+splits], og_shape[1:]) for x in range(0, len(matrix), splits)]
 
-def view_by_head(l: list, d_k: int) -> list:
-    '''
-    Assume l is a matrix of shape (batch_size, sequence_length, d_model)
-
-    Split the matrix into n_head matrices of shape (batch_size, sequence_length, n_heads, d_k)
-
-    Return a transposed matrix of shape (batch_size, n_heads, sequence_length, d_k)
-    '''
-    matrix = []
-    for seq in l:
-        new_seq = []
-        for token in seq:
-            x = [token[x:x+d_k] for x in range(0, len(token), d_k)]
-            new_seq.append(x)
-        matrix.append(new_seq)
-    
-    return [list(map(list, zip(*seq))) for seq in matrix]
+# return [list(map(list, zip(*seq))) for seq in matrix]
