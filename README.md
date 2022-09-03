@@ -25,6 +25,7 @@ I implemented multihead attention using the scaled dot-product attention equatio
 In self-attention, the query, key, and value matrices are all the same. This is used to understand relationships between words in the same document. In encoder-decoder attention, the query is the output from the previous iteration of the decoder. By mapping the decoder output to the original input sentence, the model is able to map relationships between the output and input document, which is very useful for translation.
 
 ```python
+# model.py
 class MultiHeadAttention:
     def __init__(self, d_model = 512, n_head = 8, max_seq_len = 512):
         '''
