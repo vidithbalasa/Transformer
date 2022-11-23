@@ -142,8 +142,6 @@ Unlike previous natural language models such as RNNs, transformers take in a seq
 
 In order to add some sense of order back into the model, positional encoding is used. This is a vector of values which are added to the word embeddings. My implementation of positional encoding followed the paper directly. The authors use an algorithm where the positional encoding of even tokens are a sinusoid and the positional encoding of odd tokens are a cosinusoid.
 
-`CODE`
-
 ## Multidimensional Matrix Math
 In order to implement the attention mechanism and positional encoding, I had to become quite proficient in matrix math. This included taking the dot product of two matrices, matrix multiplication, and transposing matrices.
 
@@ -151,17 +149,11 @@ I found that the best way to understand these operations was to think of them in
 
 Multidimensional matrix multiplication is a bit more complicated, but can be thought of as a series of dot products. First, the columns of the first matrix are dotted with the rows of the second matrix. This process can be expanded so that you may choose any 2 arbitrary dimensions to multiply together. My implementation is heavily based on a 2010 paper written by Ashu that I found on page 2 of Google[1].
 
-`CODE`
-
 ## Optimizer
 I used the Adam optimizer[2] with a learning rate of 0.0001 and a batch size of 64. I found that these hyperparameters worked well on my training data. I trained my model for 10 epochs and found that it converged after about 5 epochs.
 
-`CODE`
-
 ## Results
 I was able to achieve a translation accuracy of >25% on the English-German translation task, within 5% of the author's original results.
-
-`CODE`
 
 ## References
 [1] Ashu, M. (2010). Matrix multiplication from a higher perspective. Retrieved from http://www.cse.iitk.ac.in/users/ashu/cs365/l6.pdf
